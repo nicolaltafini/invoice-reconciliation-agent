@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Controllo fatture passive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<style>
+  :root {
+    --paper: #F4F6F5;
+    --sheet: #FFFFFF;
+    --ink: #1C2B3A;
+    --muted: #5A6A77;
+    --rule: #D4DCE1;
+    --ledger: #2E6A54;
+    --alert: #A5322A;
+    --focus: #2F5D8C;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Public Sans", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    font-variant-numeric: tabular-nums;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+  header { background: var(--sheet); border-bottom: 1px solid var(--rule); }
+  header .wrap { padding-top: 18px; padding-bottom: 14px; }
+  h1 { margin: 0; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: 0.9rem; }
+
+  main { padding: 28px 0 160px; }
+  #empty h2 { font-size: 1.05rem; font-weight: 600; margin: 0 0 12px; }
+  .suggestions { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+  .suggestions button {
+    font: inherit; color: var(--ink); background: var(--sheet);
+    border: 1px solid var(--rule); border-radius: 6px; padding: 8px 12px; cursor: pointer; text-align: left;
+  }
+  .suggestions button:hover { border-color: var(--ink); }
+
+  .msg { margin: 0 0 22px; }
+  .msg.user .bubble {
+    width: fit-content; max-width: 80%; margin-left: auto;
+    background: var(--ink); color: #fff;
+    padding: 10px 14px; border-radius: 14px 14px 4px 14px;
+    white-space: pre-wrap;
+  }
+  .msg.assistant .bubble {
+    background: var(--sheet); border: 1px solid var(--rule); border-left: 3px solid var(--ledger);
+    padding: 12px 18px; border-radius: 4px; overflow-x: auto;
+  }
+  .msg.pending .bubble { color: var(--muted); border-left-color: var(--rule); }
+  .msg.failed .bubble { border-left-color: var(--alert); }
+  .bubble p { margin: 0.45em 0; }
+  .bubble table { border-collapse: collapse; margin: 10px 0; font-size: 0.92rem; }
+  .bubble th, .bubble td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  .bubble th { color: var(--muted); font-weight: 600; }
+
+  .trace { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; font-size: 0.8rem; color: var(--muted); }
+  .stamp {
+    border: 1.5px solid var(--ledger); color: var(--ledger);
+    padding: 1px 8px; border-radius: 3px; font-weight: 600;
+    transform: rotate(-1.5deg);
+  }
+  .stamp.error { border-color: var(--alert); color: var(--alert); }
+
+  form {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    padding: 28px 0 18px;
+    background: linear-gradient(to bottom, transparent, var(--paper) 35%);
+  }
+  .composer { display: flex; gap: 10px; align-items: flex-end; }
+  textarea {
+    flex: 1; resize: none; font: inherit; color: var(--ink);
+    min-height: 52px; max-height: 180px; padding: 13px 14px;
+    background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px;
+  }
+  #send {
+    font: inherit; font-weight: 600; color: #fff; background: var(--ledger);
+    border: 0; border-radius: 8px; padding: 0 18px; height: 52px; cursor: pointer;
+  }
+  #send:disabled { opacity: 0.5; cursor: wait; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { .stamp { transform: none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Controllo fatture passive</h1>
+    <p>Fatture, DDT e ordini a confronto. Chiedi quali fatture non tornano e perché.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="log">
+    <section id="empty">
+      <h2>Da dove vuoi partire?</h2>
+      <div class="suggestions">
+        <button type="button">Quali fatture hanno anomalie e quanto rischio di pagare in più?</button>
+        <button type="button">Perché la fattura EM/26/1022 non torna? Confrontala con l'ordine.</button>
+        <button type="button">Mostrami le righe dell'ordine PO-2026-002.</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<form id="ask" class="wrap">
+  <div class="composer">
+    <label for="question" hidden>Domanda</label>
+    <textarea id="question" rows="1" placeholder="Scrivi una domanda sulle fatture" required></textarea>
+    <button id="send" type="submit">Chiedi</button>
+  </div>
+</form>
+
+<script>
+  const TOOL_LABELS = {
+    list_reconciliations: "Elenco riconciliazioni",
+    get_reconciliation: "Dettaglio fattura",
+    get_purchase_order: "Ordine d'acquisto",
+  };
+
+  const history = [];
+  const log = document.getElementById("log");
+  const form = document.getElementById("ask");
+  const input = document.getElementById("question");
+  const send = document.getElementById("send");
+
+  function addMessage(role, text, options = {}) {
+    const message = document.createElement("div");
+    message.className = `msg ${role}` + (options.state ? ` ${options.state}` : "");
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    if (role === "assistant") {
+      bubble.innerHTML = DOMPurify.sanitize(marked.parse(text));
+    } else {
+      bubble.textContent = text;
+    }
+    message.appendChild(bubble);
+
+    if (options.toolCalls && options.toolCalls.length) {
+      const trace = document.createElement("div");
+      trace.className = "trace";
+      trace.append("Dati consultati:");
+      for (const call of options.toolCalls) {
+        const stamp = document.createElement("span");
+        stamp.className = "stamp" + (call.is_error ? " error" : "");
+        stamp.textContent = TOOL_LABELS[call.name] || call.name;
+        stamp.title = JSON.stringify(call.arguments);
+        trace.appendChild(stamp);
+      }
+      message.appendChild(trace);
+    }
+
+    log.appendChild(message);
+    message.scrollIntoView({ block: "end" });
+    return message;
+  }
+
+  async function ask(question) {
+    document.getElementById("empty")?.remove();
+    history.push({ role: "user", content: question });
+    addMessage("user", question);
+    const pending = addMessage("assistant", "Sto controllando fatture, DDT e ordini…", { state: "pending" });
+    send.disabled = true;
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history }),
+      });
+      const data = await response.json();
+      pending.remove();
+      if (!response.ok) {
+        const detail = typeof data.detail === "string" ? data.detail : `errore ${response.status}`;
+        throw new Error(detail);
+      }
+      history.push({ role: "assistant", content: data.reply });
+      addMessage("assistant", data.reply, { toolCalls: data.tool_calls });
+    } catch (error) {
+      pending.remove();
+      history.pop();
+      addMessage("assistant", `Risposta non ricevuta: ${error.message}. Controlla che il server sia acceso e riprova.`, { state: "failed" });
+    } finally {
+      send.disabled = false;
+      input.focus();
+    }
+  }
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const question = input.value.trim();
+    if (!question || send.disabled) return;
+    input.value = "";
+    ask(question);
+  });
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      form.requestSubmit();
+    }
+  });
+
+  document.querySelectorAll(".suggestions button").forEach((button) => {
+    button.addEventListener("click", () => ask(button.textContent));
+  });
+</script>
+</body>
+</html>

@@ -1,12 +1,16 @@
+from pathlib import Path
 from typing import Literal
 
 import anthropic
 from fastapi import APIRouter, HTTPException, status
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 from reconciliation.agent import run_agent
 
 router = APIRouter(tags=["chat"])
+
+CHAT_PAGE = Path(__file__).parent / "static" / "chat.html"
 
 
 class ChatMessage(BaseModel):
@@ -29,6 +33,11 @@ class ChatResponse(BaseModel):
     tool_calls: list[ToolCallOut]
     input_tokens: int
     output_tokens: int
+
+
+@router.get("/chat", response_class=HTMLResponse, include_in_schema=False)
+def chat_page() -> str:
+    return CHAT_PAGE.read_text(encoding="utf-8")
 
 
 @router.post("/api/chat")
