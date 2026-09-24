@@ -1,4 +1,7 @@
+from collections.abc import Iterator
+
 from sqlalchemy import URL, create_engine
+from sqlalchemy.orm import Session
 
 from reconciliation.config import settings
 
@@ -12,3 +15,8 @@ database_url = URL.create(
 )
 
 engine = create_engine(database_url, pool_pre_ping=True)
+
+
+def get_session() -> Iterator[Session]:
+    with Session(engine) as session:
+        yield session
