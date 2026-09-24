@@ -12,11 +12,13 @@ from reconciliation.ddt_extraction import DdtExtractionError, extract_ddt
 from reconciliation.ddts import DuplicateDdtError, MissingSupplierVatError, save_ddt
 from reconciliation.fatturapa import InvoiceParsingError, parse_invoice
 from reconciliation.invoices import DuplicateInvoiceError, save_invoice
+from reconciliation.reconciliation_api import router as reconciliation_router
 
 MAX_INVOICE_BYTES = 5 * 1024 * 1024
 MAX_DDT_BYTES = 10 * 1024 * 1024
 
 app = FastAPI(title="Invoice Reconciliation Agent")
+app.include_router(reconciliation_router)
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
