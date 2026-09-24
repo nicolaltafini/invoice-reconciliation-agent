@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:FatturaElettronica versione="FPR12" xmlns:p="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2">
+  <FatturaElettronicaHeader>
+    <DatiTrasmissione>
+      <IdTrasmittente><IdPaese>IT</IdPaese><IdCodice>01111111111</IdCodice></IdTrasmittente>
+      <ProgressivoInvio>00162</ProgressivoInvio>
+      <FormatoTrasmissione>FPR12</FormatoTrasmissione>
+      <CodiceDestinatario>0000000</CodiceDestinatario>
+    </DatiTrasmissione>
+    <CedentePrestatore>
+      <DatiAnagrafici>
+        <IdFiscaleIVA><IdPaese>IT</IdPaese><IdCodice>01111111111</IdCodice></IdFiscaleIVA>
+        <Anagrafica><Denominazione>Ferramenta Adige Srl</Denominazione></Anagrafica>
+        <RegimeFiscale>RF01</RegimeFiscale>
+      </DatiAnagrafici>
+      <Sede><Indirizzo>Via dei Mestieri 12</Indirizzo><CAP>37100</CAP><Comune>Verona</Comune><Provincia>VR</Provincia><Nazione>IT</Nazione></Sede>
+    </CedentePrestatore>
+    <CessionarioCommittente>
+      <DatiAnagrafici>
+        <IdFiscaleIVA><IdPaese>IT</IdPaese><IdCodice>09999999999</IdCodice></IdFiscaleIVA>
+        <Anagrafica><Denominazione>Officine Demo Srl</Denominazione></Anagrafica>
+      </DatiAnagrafici>
+      <Sede><Indirizzo>Via Industria 10</Indirizzo><CAP>37063</CAP><Comune>Isola della Scala</Comune><Provincia>VR</Provincia><Nazione>IT</Nazione></Sede>
+    </CessionarioCommittente>
+  </FatturaElettronicaHeader>
+  <FatturaElettronicaBody>
+    <DatiGenerali>
+      <DatiGeneraliDocumento>
+        <TipoDocumento>TD01</TipoDocumento><Divisa>EUR</Divisa><Data>2026-09-18</Data><Numero>FA-2026/0162</Numero>
+        <ImportoTotaleDocumento>256.20</ImportoTotaleDocumento>
+      </DatiGeneraliDocumento>
+      <DatiOrdineAcquisto><IdDocumento>PO-2026-004</IdDocumento></DatiOrdineAcquisto>
+      <DatiDDT><NumeroDDT>DDT-0912</NumeroDDT><DataDDT>2026-09-16</DataDDT></DatiDDT>
+    </DatiGenerali>
+    <DatiBeniServizi>
+      <DettaglioLinee>
+        <NumeroLinea>1</NumeroLinea><CodiceArticolo><CodiceTipo>INTERNO</CodiceTipo><CodiceValore>VIT-M6-30</CodiceValore></CodiceArticolo>
+        <Descrizione>Viti M6x30 inox</Descrizione><Quantita>2000.00</Quantita><UnitaMisura>PZ</UnitaMisura>
+        <PrezzoUnitario>0.061000</PrezzoUnitario><PrezzoTotale>122.00</PrezzoTotale><AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DettaglioLinee>
+        <NumeroLinea>2</NumeroLinea><CodiceArticolo><CodiceTipo>INTERNO</CodiceTipo><CodiceValore>TAS-8</CodiceValore></CodiceArticolo>
+        <Descrizione>Tasselli nylon 8mm</Descrizione><Quantita>1500.00</Quantita><UnitaMisura>PZ</UnitaMisura>
+        <PrezzoUnitario>0.042000</PrezzoUnitario><PrezzoTotale>63.00</PrezzoTotale><AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DettaglioLinee>
+        <NumeroLinea>3</NumeroLinea><CodiceArticolo><CodiceTipo>INTERNO</CodiceTipo><CodiceValore>TRASP</CodiceValore></CodiceArticolo>
+        <Descrizione>Spese di trasporto</Descrizione><Quantita>1.00</Quantita><UnitaMisura>PZ</UnitaMisura>
+        <PrezzoUnitario>25.000000</PrezzoUnitario><PrezzoTotale>25.00</PrezzoTotale><AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DatiRiepilogo><AliquotaIVA>22.00</AliquotaIVA><ImponibileImporto>210.00</ImponibileImporto><Imposta>46.20</Imposta><EsigibilitaIVA>I</EsigibilitaIVA></DatiRiepilogo>
+    </DatiBeniServizi>
+  </FatturaElettronicaBody>
+</p:FatturaElettronica>

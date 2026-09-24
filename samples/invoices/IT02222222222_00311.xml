@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:FatturaElettronica versione="FPR12" xmlns:p="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2">
+  <FatturaElettronicaHeader>
+    <DatiTrasmissione>
+      <IdTrasmittente><IdPaese>IT</IdPaese><IdCodice>02222222222</IdCodice></IdTrasmittente>
+      <ProgressivoInvio>00311</ProgressivoInvio>
+      <FormatoTrasmissione>FPR12</FormatoTrasmissione>
+      <CodiceDestinatario>0000000</CodiceDestinatario>
+    </DatiTrasmissione>
+    <CedentePrestatore>
+      <DatiAnagrafici>
+        <IdFiscaleIVA><IdPaese>IT</IdPaese><IdCodice>02222222222</IdCodice></IdFiscaleIVA>
+        <Anagrafica><Denominazione>Imballaggi Veneto Spa</Denominazione></Anagrafica>
+        <RegimeFiscale>RF01</RegimeFiscale>
+      </DatiAnagrafici>
+      <Sede><Indirizzo>Viale del Lavoro 5</Indirizzo><CAP>35100</CAP><Comune>Padova</Comune><Provincia>PD</Provincia><Nazione>IT</Nazione></Sede>
+    </CedentePrestatore>
+    <CessionarioCommittente>
+      <DatiAnagrafici>
+        <IdFiscaleIVA><IdPaese>IT</IdPaese><IdCodice>09999999999</IdCodice></IdFiscaleIVA>
+        <Anagrafica><Denominazione>Officine Demo Srl</Denominazione></Anagrafica>
+      </DatiAnagrafici>
+      <Sede><Indirizzo>Via Industria 10</Indirizzo><CAP>37063</CAP><Comune>Isola della Scala</Comune><Provincia>VR</Provincia><Nazione>IT</Nazione></Sede>
+    </CessionarioCommittente>
+  </FatturaElettronicaHeader>
+  <FatturaElettronicaBody>
+    <DatiGenerali>
+      <DatiGeneraliDocumento>
+        <TipoDocumento>TD01</TipoDocumento><Divisa>EUR</Divisa><Data>2026-09-12</Data><Numero>2026-IV-0311</Numero>
+        <ImportoTotaleDocumento>904.02</ImportoTotaleDocumento>
+      </DatiGeneraliDocumento>
+      <DatiOrdineAcquisto><IdDocumento>PO-2026-002</IdDocumento></DatiOrdineAcquisto>
+      <DatiDDT><NumeroDDT>2026/DDT/0540</NumeroDDT><DataDDT>2026-09-09</DataDDT></DatiDDT>
+    </DatiGenerali>
+    <DatiBeniServizi>
+      <DettaglioLinee>
+        <NumeroLinea>1</NumeroLinea><CodiceArticolo><CodiceTipo>INTERNO</CodiceTipo><CodiceValore>SCA-403030</CodiceValore></CodiceArticolo>
+        <Descrizione>Scatole cartone 40x30x30</Descrizione><Quantita>500.00</Quantita><UnitaMisura>PZ</UnitaMisura>
+        <PrezzoUnitario>1.050000</PrezzoUnitario><PrezzoTotale>525.00</PrezzoTotale><AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DettaglioLinee>
+        <NumeroLinea>2</NumeroLinea><CodiceArticolo><CodiceTipo>INTERNO</CodiceTipo><CodiceValore>NAS-50</CodiceValore></CodiceArticolo>
+        <Descrizione>Nastro adesivo 50mm</Descrizione><Quantita>120.00</Quantita><UnitaMisura>PZ</UnitaMisura>
+        <PrezzoUnitario>1.800000</PrezzoUnitario><PrezzoTotale>216.00</PrezzoTotale><AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DatiRiepilogo><AliquotaIVA>22.00</AliquotaIVA><ImponibileImporto>741.00</ImponibileImporto><Imposta>163.02</Imposta><EsigibilitaIVA>I</EsigibilitaIVA></DatiRiepilogo>
+    </DatiBeniServizi>
+  </FatturaElettronicaBody>
+</p:FatturaElettronica>
