@@ -87,3 +87,40 @@ class InvoiceLine(Base):
     line_total: Mapped[Decimal] = mapped_column(Numeric(14, 2))
 
     invoice: Mapped[Invoice] = relationship(back_populates="lines")
+
+class Ddt(Base):
+    __tablename__ = "ddt"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    supplier_id: Mapped[int] = mapped_column(ForeignKey("supplier.id"))
+    ddt_number: Mapped[str] = mapped_column(String(50))
+    ddt_date: Mapped[date]
+    order_number: Mapped[str | None] = mapped_column(String(50))
+    source_filename: Mapped[str] = mapped_column(String(255))
+    extraction_model: Mapped[str] = mapped_column(String(100))
+    input_tokens: Mapped[int]
+    output_tokens: Mapped[int]
+    received_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    supplier: Mapped[Supplier] = relationship()
+    lines: Mapped[list[DdtLine]] = relationship(
+        back_populates="ddt",
+        cascade="all, delete-orphan",
+        order_by="DdtLine.line_number",
+    )
+
+
+class DdtLine(Base):
+    __tablename__ = "ddt_line"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    ddt_id: Mapped[int] = mapped_column(ForeignKey("ddt.id", ondelete="CASCADE"))
+    line_number: Mapped[int]
+    item_code: Mapped[str | None] = mapped_column(String(50))
+    description: Mapped[str] = mapped_column(String(1000))
+    quantity: Mapped[Decimal] = mapped_column(Numeric(18, 8))
+    unit: Mapped[str | None] = mapped_column(String(10))
+
+    ddt: Mapped[Ddt] = relationship(back_populates="lines")
