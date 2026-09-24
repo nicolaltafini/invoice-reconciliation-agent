@@ -12,6 +12,7 @@ dependencies = [
     "anthropic>=1.8.0",
     "defusedxml>=0.7.1",
     "fastapi>=0.141.1",
+    "mcp>=2,<3",
     "psycopg[binary]>=3.3.6",
     "pydantic-settings>=2.15.0",
     "python-multipart>=0.0.32",
