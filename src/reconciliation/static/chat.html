@@ -15,110 +15,190 @@
     --sheet: #FFFFFF;
     --ink: #1C2B3A;
     --muted: #5A6A77;
-    --rule: #D4DCE1;
+    --rule: #DDE3E7;
     --ledger: #2E6A54;
+    --ledger-soft: #E4F0EA;
     --alert: #A5322A;
+    --alert-soft: #F7E5E3;
+    --wait-soft: #ECEFF2;
     --focus: #2F5D8C;
   }
   * { box-sizing: border-box; }
+  html, body { margin: 0; }
   body {
-    margin: 0;
     font-family: "Public Sans", system-ui, sans-serif;
-    font-size: 16px;
+    font-size: 15px;
     line-height: 1.55;
     font-variant-numeric: tabular-nums;
     background: var(--paper);
     color: var(--ink);
   }
-  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  /* Intestazione */
   header { background: var(--sheet); border-bottom: 1px solid var(--rule); }
-  header .wrap { padding-top: 18px; padding-bottom: 14px; }
-  h1 { margin: 0; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+  .header-inner { max-width: 1180px; margin: 0 auto; padding: 16px 24px; }
+  h1 { margin: 0; font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
   header p { margin: 2px 0 0; color: var(--muted); font-size: 0.9rem; }
 
-  main { padding: 28px 0 160px; }
-  #empty h2 { font-size: 1.05rem; font-weight: 600; margin: 0 0 12px; }
-  .suggestions { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+  /* Struttura a due colonne */
+  .layout {
+    max-width: 1180px; margin: 0 auto; padding: 24px;
+    display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 28px;
+  }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; padding: 16px; }
+    .panel { position: static; }
+  }
+
+  /* Pannello fatture */
+  .panel {
+    position: sticky; top: 24px; align-self: start;
+    background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden;
+  }
+  .panel-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 14px 16px; border-bottom: 1px solid var(--rule);
+  }
+  .panel-head h2 { margin: 0; font-size: 0.95rem; font-weight: 700; }
+  .panel-head span { color: var(--muted); font-size: 0.85rem; }
+  .invoice-list { list-style: none; margin: 0; padding: 0; }
+  .invoice-list button {
+    width: 100%; text-align: left; background: none; border: 0; cursor: pointer;
+    border-bottom: 1px solid var(--rule); padding: 11px 16px;
+    display: grid; grid-template-columns: 1fr auto; gap: 1px 12px;
+  }
+  .invoice-list button:hover { background: var(--paper); }
+  .inv-number { font-weight: 600; }
+  .inv-supplier { color: var(--muted); font-size: 0.85rem; }
+  .inv-risk { grid-column: 2; grid-row: 2; text-align: right; font-size: 0.85rem; color: var(--muted); }
+  .inv-risk.positive { color: var(--alert); font-weight: 600; }
+  .badge {
+    grid-column: 2; grid-row: 1; justify-self: end;
+    font-size: 0.75rem; font-weight: 600; padding: 1px 9px; border-radius: 999px;
+  }
+  .badge.ok { background: var(--ledger-soft); color: var(--ledger); }
+  .badge.alert { background: var(--alert-soft); color: var(--alert); }
+  .badge.wait { background: var(--wait-soft); color: var(--muted); }
+  .panel-foot {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 12px 16px; font-size: 0.9rem;
+  }
+  .panel-foot strong { color: var(--alert); font-size: 1.05rem; }
+  .panel-note { padding: 14px 16px; color: var(--muted); font-size: 0.9rem; margin: 0; }
+
+  /* Chat */
+  .chat { display: flex; flex-direction: column; min-height: calc(100vh - 130px); }
+  #log { flex: 1; }
+  #empty { padding: 8px 0 24px; }
+  #empty h2 { margin: 0 0 4px; font-size: 1.05rem; }
+  #empty p { margin: 0 0 14px; color: var(--muted); }
+  .suggestions { display: flex; flex-wrap: wrap; gap: 8px; }
   .suggestions button {
-    font: inherit; color: var(--ink); background: var(--sheet);
-    border: 1px solid var(--rule); border-radius: 6px; padding: 8px 12px; cursor: pointer; text-align: left;
+    background: var(--sheet); border: 1px solid var(--rule); border-radius: 999px;
+    padding: 7px 14px; cursor: pointer;
   }
   .suggestions button:hover { border-color: var(--ink); }
 
-  .msg { margin: 0 0 22px; }
+  .msg { margin: 0 0 18px; }
   .msg.user .bubble {
     width: fit-content; max-width: 80%; margin-left: auto;
     background: var(--ink); color: #fff;
-    padding: 10px 14px; border-radius: 14px 14px 4px 14px;
-    white-space: pre-wrap;
+    padding: 9px 14px; border-radius: 14px 14px 4px 14px; white-space: pre-wrap;
   }
   .msg.assistant .bubble {
-    background: var(--sheet); border: 1px solid var(--rule); border-left: 3px solid var(--ledger);
-    padding: 12px 18px; border-radius: 4px; overflow-x: auto;
+    background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 12px 18px;
   }
-  .msg.pending .bubble { color: var(--muted); border-left-color: var(--rule); }
-  .msg.failed .bubble { border-left-color: var(--alert); }
-  .bubble p { margin: 0.45em 0; }
-  .bubble table { border-collapse: collapse; margin: 10px 0; font-size: 0.92rem; }
-  .bubble th, .bubble td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  .msg.pending .bubble { color: var(--muted); }
+  .msg.failed .bubble { border-color: var(--alert); color: var(--alert); }
+  .bubble > :first-child { margin-top: 0; }
+  .bubble > :last-child { margin-bottom: 0; }
+  .bubble p { margin: 0.5em 0; }
+  .bubble h1, .bubble h2, .bubble h3 { font-size: 1rem; margin: 0.8em 0 0.3em; }
+  .bubble ul, .bubble ol { padding-left: 1.2em; margin: 0.5em 0; }
+  .bubble table {
+    display: block; max-width: 100%; overflow-x: auto;
+    border-collapse: collapse; margin: 10px 0; font-size: 0.9rem;
+  }
+  .bubble th, .bubble td { text-align: left; padding: 6px 14px 6px 0; border-bottom: 1px solid var(--rule); }
   .bubble th { color: var(--muted); font-weight: 600; }
+  .bubble td { white-space: nowrap; }
 
   .trace { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; font-size: 0.8rem; color: var(--muted); }
   .stamp {
     border: 1.5px solid var(--ledger); color: var(--ledger);
-    padding: 1px 8px; border-radius: 3px; font-weight: 600;
-    transform: rotate(-1.5deg);
+    padding: 0 8px; border-radius: 3px; font-weight: 600; transform: rotate(-1.5deg);
   }
   .stamp.error { border-color: var(--alert); color: var(--alert); }
 
-  form {
-    position: fixed; left: 0; right: 0; bottom: 0;
-    padding: 28px 0 18px;
-    background: linear-gradient(to bottom, transparent, var(--paper) 35%);
+  /* Box di scrittura */
+  form { position: sticky; bottom: 0; padding: 16px 0 20px; background: linear-gradient(to bottom, transparent, var(--paper) 30%); }
+  .composer {
+    display: flex; gap: 8px; align-items: flex-end;
+    background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 6px;
   }
-  .composer { display: flex; gap: 10px; align-items: flex-end; }
+  .composer:focus-within { border-color: var(--focus); }
   textarea {
-    flex: 1; resize: none; font: inherit; color: var(--ink);
-    min-height: 52px; max-height: 180px; padding: 13px 14px;
-    background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px;
+    flex: 1; resize: none; border: 0; outline: none; background: transparent;
+    font: inherit; color: var(--ink); padding: 9px 10px; max-height: 160px; overflow-y: hidden;
   }
   #send {
-    font: inherit; font-weight: 600; color: #fff; background: var(--ledger);
-    border: 0; border-radius: 8px; padding: 0 18px; height: 52px; cursor: pointer;
+    background: var(--ledger); color: #fff; border: 0; border-radius: 8px;
+    padding: 9px 18px; font-weight: 600; cursor: pointer;
   }
   #send:disabled { opacity: 0.5; cursor: wait; }
-  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .hint { margin: 6px 4px 0; font-size: 0.78rem; color: var(--muted); }
+
   @media (prefers-reduced-motion: reduce) { .stamp { transform: none; } }
 </style>
 </head>
 <body>
 <header>
-  <div class="wrap">
+  <div class="header-inner">
     <h1>Controllo fatture passive</h1>
     <p>Fatture, DDT e ordini a confronto. Chiedi quali fatture non tornano e perché.</p>
   </div>
 </header>
 
-<main class="wrap">
-  <div id="log">
-    <section id="empty">
-      <h2>Da dove vuoi partire?</h2>
-      <div class="suggestions">
-        <button type="button">Quali fatture hanno anomalie e quanto rischio di pagare in più?</button>
-        <button type="button">Perché la fattura EM/26/1022 non torna? Confrontala con l'ordine.</button>
-        <button type="button">Mostrami le righe dell'ordine PO-2026-002.</button>
-      </div>
-    </section>
-  </div>
-</main>
+<div class="layout">
+  <aside class="panel" aria-label="Fatture ricevute">
+    <div class="panel-head">
+      <h2>Fatture</h2>
+      <span id="invoice-count"></span>
+    </div>
+    <ul class="invoice-list" id="invoice-list"></ul>
+    <div class="panel-foot" id="panel-foot" hidden>
+      <span>Totale a rischio</span>
+      <strong id="total-risk"></strong>
+    </div>
+    <p class="panel-note" id="panel-note">Caricamento fatture…</p>
+  </aside>
 
-<form id="ask" class="wrap">
-  <div class="composer">
-    <label for="question" hidden>Domanda</label>
-    <textarea id="question" rows="1" placeholder="Scrivi una domanda sulle fatture" required></textarea>
-    <button id="send" type="submit">Chiedi</button>
-  </div>
-</form>
+  <main class="chat">
+    <div id="log">
+      <section id="empty">
+        <h2>Da dove vuoi partire?</h2>
+        <p>Scegli una fattura dal pannello o parti da una di queste domande.</p>
+        <div class="suggestions">
+          <button type="button">Quali fatture hanno anomalie e quanto rischio di pagare in più?</button>
+          <button type="button">Quale fornitore mi crea più problemi?</button>
+          <button type="button">Mostrami le righe dell'ordine PO-2026-002.</button>
+        </div>
+      </section>
+    </div>
+
+    <form id="ask">
+      <div class="composer">
+        <label for="question" hidden>Domanda</label>
+        <textarea id="question" rows="1" placeholder="Scrivi una domanda sulle fatture" required></textarea>
+        <button id="send" type="submit">Chiedi</button>
+      </div>
+      <p class="hint">Invio per chiedere, Maiusc + Invio per andare a capo.</p>
+    </form>
+  </main>
+</div>
 
 <script>
   const TOOL_LABELS = {
@@ -126,6 +206,12 @@
     get_reconciliation: "Dettaglio fattura",
     get_purchase_order: "Ordine d'acquisto",
   };
+  const STATUS = {
+    MATCHED: { label: "In regola", css: "ok" },
+    DISCREPANCIES: { label: "Anomalie", css: "alert" },
+    WAITING_FOR_DDT: { label: "Manca DDT", css: "wait" },
+  };
+  const euro = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" });
 
   const history = [];
   const log = document.getElementById("log");
@@ -133,39 +219,86 @@
   const input = document.getElementById("question");
   const send = document.getElementById("send");
 
-  function addMessage(role, text, options = {}) {
-    const message = document.createElement("div");
-    message.className = `msg ${role}` + (options.state ? ` ${options.state}` : "");
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
 
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
+  async function loadInvoices() {
+    const list = document.getElementById("invoice-list");
+    const note = document.getElementById("panel-note");
+    try {
+      const response = await fetch("/reconciliations");
+      if (!response.ok) throw new Error();
+      const rows = await response.json();
+
+      list.replaceChildren();
+      let total = 0;
+      for (const row of rows) {
+        const risk = Number(row.amount_at_risk);
+        total += risk;
+        const status = STATUS[row.status] || { label: row.status, css: "wait" };
+
+        const button = el("button");
+        button.type = "button";
+        button.append(
+          el("span", "inv-number", row.invoice_number),
+          el("span", `badge ${status.css}`, status.label),
+          el("span", "inv-supplier", row.supplier_name),
+          el("span", "inv-risk" + (risk > 0 ? " positive" : ""), risk > 0 ? euro.format(risk) : "—"),
+        );
+        button.addEventListener("click", () => {
+          const question = row.status === "MATCHED"
+            ? `Riepilogami la fattura ${row.invoice_number}.`
+            : `Perché la fattura ${row.invoice_number} non torna? Confrontala con l'ordine.`;
+          ask(question);
+        });
+
+        const item = el("li");
+        item.append(button);
+        list.append(item);
+      }
+
+      document.getElementById("invoice-count").textContent = `${rows.length} ricevute`;
+      document.getElementById("total-risk").textContent = euro.format(total);
+      document.getElementById("panel-foot").hidden = rows.length === 0;
+      note.hidden = rows.length > 0;
+      note.textContent = "Nessuna fattura caricata.";
+    } catch {
+      note.hidden = false;
+      note.textContent = "Fatture non caricate: controlla che il server sia acceso e ricarica la pagina.";
+    }
+  }
+
+  function addMessage(role, text, options = {}) {
+    const message = el("div", `msg ${role}` + (options.state ? ` ${options.state}` : ""));
+    const bubble = el("div", "bubble");
     if (role === "assistant") {
       bubble.innerHTML = DOMPurify.sanitize(marked.parse(text));
     } else {
       bubble.textContent = text;
     }
-    message.appendChild(bubble);
+    message.append(bubble);
 
     if (options.toolCalls && options.toolCalls.length) {
-      const trace = document.createElement("div");
-      trace.className = "trace";
-      trace.append("Dati consultati:");
+      const trace = el("div", "trace", "Dati consultati:");
       for (const call of options.toolCalls) {
-        const stamp = document.createElement("span");
-        stamp.className = "stamp" + (call.is_error ? " error" : "");
-        stamp.textContent = TOOL_LABELS[call.name] || call.name;
+        const stamp = el("span", "stamp" + (call.is_error ? " error" : ""), TOOL_LABELS[call.name] || call.name);
         stamp.title = JSON.stringify(call.arguments);
-        trace.appendChild(stamp);
+        trace.append(stamp);
       }
-      message.appendChild(trace);
+      message.append(trace);
     }
 
-    log.appendChild(message);
+    log.append(message);
     message.scrollIntoView({ block: "end" });
     return message;
   }
 
   async function ask(question) {
+    if (send.disabled) return;
     document.getElementById("empty")?.remove();
     history.push({ role: "user", content: question });
     addMessage("user", question);
@@ -181,11 +314,11 @@
       const data = await response.json();
       pending.remove();
       if (!response.ok) {
-        const detail = typeof data.detail === "string" ? data.detail : `errore ${response.status}`;
-        throw new Error(detail);
+        throw new Error(typeof data.detail === "string" ? data.detail : `errore ${response.status}`);
       }
       history.push({ role: "assistant", content: data.reply });
       addMessage("assistant", data.reply, { toolCalls: data.tool_calls });
+      loadInvoices();
     } catch (error) {
       pending.remove();
       history.pop();
@@ -196,14 +329,22 @@
     }
   }
 
+  function resizeInput() {
+    input.style.height = "auto";
+    input.style.height = `${input.scrollHeight}px`;
+    input.style.overflowY = input.scrollHeight > 160 ? "auto" : "hidden";
+  }
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const question = input.value.trim();
-    if (!question || send.disabled) return;
+    if (!question) return;
     input.value = "";
+    resizeInput();
     ask(question);
   });
 
+  input.addEventListener("input", resizeInput);
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
@@ -214,6 +355,8 @@
   document.querySelectorAll(".suggestions button").forEach((button) => {
     button.addEventListener("click", () => ask(button.textContent));
   });
+
+  loadInvoices();
 </script>
 </body>
 </html>
