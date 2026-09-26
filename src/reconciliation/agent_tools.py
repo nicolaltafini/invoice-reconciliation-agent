@@ -3,6 +3,7 @@ from decimal import Decimal
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from reconciliation.approvals import Decision, decide
 from reconciliation.db import engine
 from reconciliation.matching import ReconciliationResult
 from reconciliation.models import Invoice, PurchaseOrder
@@ -32,6 +33,8 @@ def get_reconciliation(invoice_number: str) -> dict:
         invoice, result = reconcile_invoice(session, invoices[0].id)
         return {
             **_summary(invoice, result),
+            "decision_note": invoice.decision_note,
+            "decided_by": invoice.decided_by,
             "discrepancies": [
                 {
                     "type": d.type,
@@ -69,6 +72,19 @@ def get_purchase_order(order_number: str) -> dict:
         }
 
 
+def decide_invoice(
+    invoice_number: str, decision: Decision, actor: str, role: str, note: str | None
+) -> dict:
+    with Session(engine) as session, session.begin():
+        invoice = decide(session, invoice_number, decision, actor, role, note)
+        return {
+            "invoice_number": invoice.invoice_number,
+            "approval_status": invoice.approval_status,
+            "decided_by": invoice.decided_by,
+            "decision_note": invoice.decision_note,
+        }
+
+
 def _summary(invoice: Invoice, result: ReconciliationResult) -> dict:
     return {
         "invoice_number": invoice.invoice_number,
@@ -79,6 +95,7 @@ def _summary(invoice: Invoice, result: ReconciliationResult) -> dict:
         "ddt_number": invoice.ddt_number,
         "status": result.status,
         "amount_at_risk": _dec(result.amount_at_risk),
+        "approval_status": invoice.approval_status,
     }
 
 
