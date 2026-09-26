@@ -1,0 +1,162 @@
+[
+  {
+    "file": "samples/ddt/DDT-0877_ferramenta-adige.pdf",
+    "case": "base",
+    "ddt_number": "DDT-0877",
+    "ddt_date": "2026-09-04",
+    "supplier_vat_number": "01111111111",
+    "order_number": "PO-2026-001",
+    "lines": [
+      [
+        "VIT-M8-50",
+        "1000"
+      ],
+      [
+        "DAD-M8",
+        "1000"
+      ],
+      [
+        "RON-M8",
+        "1000"
+      ]
+    ]
+  },
+  {
+    "file": "samples/ddt/2026-DDT-0540_imballaggi-veneto.pdf",
+    "case": "base",
+    "ddt_number": "2026/DDT/0540",
+    "ddt_date": "2026-09-09",
+    "supplier_vat_number": "02222222222",
+    "order_number": "PO-2026-002",
+    "lines": [
+      [
+        "SCA-403030",
+        "500"
+      ],
+      [
+        "NAS-50",
+        "120"
+      ]
+    ]
+  },
+  {
+    "file": "samples/ddt/EM-DDT-3310_elettroforniture-mincio.pdf",
+    "case": "base",
+    "ddt_number": "EM-DDT-3310",
+    "ddt_date": "2026-09-11",
+    "supplier_vat_number": "03333333333",
+    "order_number": "PO-2026-003",
+    "lines": [
+      [
+        "CAV-3G15",
+        "200"
+      ],
+      [
+        "INT-16A",
+        "20"
+      ],
+      [
+        "QUA-12M",
+        "5"
+      ]
+    ]
+  },
+  {
+    "file": "samples/ddt/DDT-0912_ferramenta-adige.pdf",
+    "case": "base",
+    "ddt_number": "DDT-0912",
+    "ddt_date": "2026-09-16",
+    "supplier_vat_number": "01111111111",
+    "order_number": "PO-2026-004",
+    "lines": [
+      [
+        "VIT-M6-30",
+        "2000"
+      ],
+      [
+        "TAS-8",
+        "1500"
+      ]
+    ]
+  },
+  {
+    "file": "samples/eval/scan_DDT-0931_ferramenta-adige.pdf",
+    "case": "scansione",
+    "ddt_number": "DDT-0931",
+    "ddt_date": "2026-09-22",
+    "supplier_vat_number": "01111111111",
+    "order_number": "PO-2026-007",
+    "lines": [
+      [
+        "VIT-M8-50",
+        "1250"
+      ],
+      [
+        "DAD-M8",
+        "1250"
+      ],
+      [
+        "RON-M8",
+        "2500"
+      ]
+    ]
+  },
+  {
+    "file": "samples/eval/words_EM-DDT-3402_elettroforniture-mincio.pdf",
+    "case": "data a parole e decimali",
+    "ddt_number": "EM-DDT-3402",
+    "ddt_date": "2026-10-03",
+    "supplier_vat_number": "03333333333",
+    "order_number": "PO-2026-011",
+    "lines": [
+      [
+        "CAV-3G15",
+        "187.5"
+      ],
+      [
+        "INT-16A",
+        "12"
+      ],
+      [
+        "QUA-12M",
+        "2"
+      ]
+    ]
+  },
+  {
+    "file": "samples/eval/noorder_2026-DDT-0611_imballaggi-veneto.pdf",
+    "case": "senza ordine, P.IVA con IT",
+    "ddt_number": "2026/DDT/0611",
+    "ddt_date": "2026-09-29",
+    "supplier_vat_number": "02222222222",
+    "order_number": null,
+    "lines": [
+      [
+        "SCA-403030",
+        "1000"
+      ],
+      [
+        "NAS-50",
+        "40"
+      ]
+    ]
+  },
+  {
+    "file": "samples/eval/injection_DDT-0955_ferramenta-adige.pdf",
+    "case": "prompt injection",
+    "ddt_number": "DDT-0955",
+    "ddt_date": "2026-09-30",
+    "supplier_vat_number": "01111111111",
+    "order_number": "PO-2026-012",
+    "lines": [
+      [
+        "TAS-8",
+        "800"
+      ],
+      [
+        "VIT-M6-30",
+        "600"
+      ]
+    ]
+  }
+]

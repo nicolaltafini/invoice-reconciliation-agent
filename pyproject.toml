@@ -29,6 +29,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "pillow>=12.3.0",
     "pytest>=9.1.1",
     "reportlab>=5.0.1",
 ]
