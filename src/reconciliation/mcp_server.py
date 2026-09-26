@@ -1,12 +1,25 @@
 import os
+from collections.abc import Callable
 from typing import Literal
 
 from mcp.server import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
 
 from reconciliation import agent_tools
-from reconciliation.approvals import Decision, Role
+from reconciliation.approvals import Decision, DecisionError, Role
 
 Status = Literal["MATCHED", "DISCREPANCIES", "WAITING_FOR_DDT"]
+
+
+def _call(function: Callable, *args):
+    """Errori previsti (regole, dati mancanti) -> messaggio leggibile per il modello.
+
+    Qualsiasi altra eccezione resta un errore imprevisto e il suo dettaglio non viene esposto.
+    """
+    try:
+        return function(*args)
+    except (DecisionError, ValueError) as error:
+        raise ToolError(str(error)) from error
 
 
 def create_mcp_server(role: Role, actor: str) -> MCPServer:
@@ -26,7 +39,7 @@ def create_mcp_server(role: Role, actor: str) -> MCPServer:
         Ogni fattura riporta amount_at_risk (euro che si rischia di pagare in piu')
         e approval_status (PENDING da decidere, APPROVED approvata, BLOCKED bloccata).
         """
-        return agent_tools.list_reconciliations(status)
+        return _call(agent_tools.list_reconciliations, status)
 
     @mcp.tool()
     def get_reconciliation(invoice_number: str) -> dict:
@@ -36,7 +49,7 @@ def create_mcp_server(role: Role, actor: str) -> MCPServer:
         (es. "EM/26/1022"). Ogni anomalia ha un tipo, un messaggio leggibile,
         il valore atteso, quello fatturato e l'importo a rischio.
         """
-        return agent_tools.get_reconciliation(invoice_number)
+        return _call(agent_tools.get_reconciliation, invoice_number)
 
     @mcp.tool()
     def get_purchase_order(order_number: str) -> dict:
@@ -44,7 +57,7 @@ def create_mcp_server(role: Role, actor: str) -> MCPServer:
 
         Utile per spiegare un'anomalia confrontando la fattura con l'ordine (es. "PO-2026-003").
         """
-        return agent_tools.get_purchase_order(order_number)
+        return _call(agent_tools.get_purchase_order, order_number)
 
     if role == Role.OPERATOR:
 
@@ -56,7 +69,7 @@ def create_mcp_server(role: Role, actor: str) -> MCPServer:
             Se la fattura ha anomalie, note e' obbligatoria e deve riportare la motivazione
             data dall'utente: non inventarla.
             """
-            return agent_tools.decide_invoice(invoice_number, Decision.APPROVE, actor, role, note)
+            return _call(agent_tools.decide_invoice, invoice_number, Decision.APPROVE, actor, role, note)
 
         @mcp.tool()
         def block_invoice(invoice_number: str, reason: str) -> dict:
@@ -65,13 +78,13 @@ def create_mcp_server(role: Role, actor: str) -> MCPServer:
             Usalo solo dopo che l'utente ha chiesto esplicitamente di bloccare quella fattura.
             reason e' la motivazione data dall'utente (es. "attendere nota di credito").
             """
-            return agent_tools.decide_invoice(invoice_number, Decision.BLOCK, actor, role, reason)
+            return _call(agent_tools.decide_invoice, invoice_number, Decision.BLOCK, actor, role, reason)
 
     return mcp
 
 
-# Server usato dall'agente finche' non passiamo il ruolo dalla chat (passo 6.3)
-mcp = create_mcp_server(Role.VIEWER, "chat")
+# Server di default con ruolo di sola lettura
+mcp = create_mcp_server(Role.VIEWER, "mcp-client")
 
 
 if __name__ == "__main__":
