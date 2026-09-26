@@ -12,7 +12,10 @@ class Settings(BaseSettings):
     db_name: str = "reconciliation"
 
     anthropic_api_key: SecretStr
-    anthropic_model: str = "claude-haiku-4-5-20251001"
+    # Scelta basata su reports/extraction_eval.json: stessa precisione di Sonnet a circa un terzo del costo
+    anthropic_extraction_model: str = "claude-haiku-4-5-20251001"
+    # L'agente ragiona su piu' passaggi e decide quali tool usare: modello piu' capace
+    anthropic_agent_model: str = "claude-sonnet-5"
 
 
 settings = Settings()

@@ -65,7 +65,7 @@ async def run_agent(history: list[dict], user: DemoUser, llm: AsyncAnthropic | N
 
         for _ in range(MAX_TOOL_ROUNDS):
             response = await llm.messages.create(
-                model=settings.anthropic_model,
+                model=settings.anthropic_agent_model,
                 max_tokens=1500,
                 system=system,
                 tools=tools,

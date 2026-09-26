@@ -51,7 +51,7 @@ class DdtExtraction:
 
 def extract_ddt(pdf: bytes, client: Anthropic | None = None, model: str | None = None) -> DdtExtraction:
     client = client or Anthropic(api_key=settings.anthropic_api_key.get_secret_value())
-    model = model or settings.anthropic_model
+    model = model or settings.anthropic_extraction_model
 
     response = client.messages.create(
         model=model,
