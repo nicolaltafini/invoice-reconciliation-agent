@@ -63,8 +63,12 @@ class Invoice(Base):
     ddt_number: Mapped[str | None] = mapped_column(String(50))
     source_filename: Mapped[str] = mapped_column(String(255))
     received_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+    DateTime(timezone=True), server_default=func.now()
     )
+    approval_status: Mapped[str] = mapped_column(String(20), server_default="PENDING")
+    decision_note: Mapped[str | None] = mapped_column(String(500))
+    decided_by: Mapped[str | None] = mapped_column(String(100))
+    decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     supplier: Mapped[Supplier] = relationship()
     lines: Mapped[list[InvoiceLine]] = relationship(
@@ -124,3 +128,16 @@ class DdtLine(Base):
     unit: Mapped[str | None] = mapped_column(String(10))
 
     ddt: Mapped[Ddt] = relationship(back_populates="lines")
+
+class AuditLog(Base):
+    __tablename__ = "audit_log"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    occurred_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    actor: Mapped[str] = mapped_column(String(100))
+    role: Mapped[str] = mapped_column(String(20))
+    action: Mapped[str] = mapped_column(String(50))
+    invoice_id: Mapped[int | None] = mapped_column(ForeignKey("invoice.id"))
+    detail: Mapped[str | None] = mapped_column(String(1000))
