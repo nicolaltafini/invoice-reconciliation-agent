@@ -31,6 +31,7 @@ class ReconciliationOut(BaseModel):
     order_number: str | None
     ddt_number: str | None
     status: str
+    approval_status: str
     amount_at_risk: Decimal
     discrepancies: list[DiscrepancyOut]
 
@@ -56,6 +57,7 @@ def _to_out(invoice: Invoice, result: ReconciliationResult) -> ReconciliationOut
         order_number=invoice.order_number,
         ddt_number=invoice.ddt_number,
         status=result.status,
+        approval_status=invoice.approval_status,
         amount_at_risk=result.amount_at_risk,
         discrepancies=[
             DiscrepancyOut(

@@ -33,16 +33,23 @@
     background: var(--paper);
     color: var(--ink);
   }
-  button { font: inherit; color: inherit; }
+  button, select { font: inherit; color: inherit; }
   :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  textarea:focus-visible { outline: none; }
 
-  /* Intestazione */
   header { background: var(--sheet); border-bottom: 1px solid var(--rule); }
-  .header-inner { max-width: 1180px; margin: 0 auto; padding: 16px 24px; }
+  .header-inner {
+    max-width: 1180px; margin: 0 auto; padding: 14px 24px;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
   h1 { margin: 0; font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
   header p { margin: 2px 0 0; color: var(--muted); font-size: 0.9rem; }
+  .user-switch { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--muted); }
+  .user-switch select {
+    background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px;
+    padding: 6px 10px; color: var(--ink); cursor: pointer;
+  }
 
-  /* Struttura a due colonne */
   .layout {
     max-width: 1180px; margin: 0 auto; padding: 24px;
     display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 28px;
@@ -52,7 +59,6 @@
     .panel { position: static; }
   }
 
-  /* Pannello fatture */
   .panel {
     position: sticky; top: 24px; align-self: start;
     background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden;
@@ -81,6 +87,8 @@
   .badge.ok { background: var(--ledger-soft); color: var(--ledger); }
   .badge.alert { background: var(--alert-soft); color: var(--alert); }
   .badge.wait { background: var(--wait-soft); color: var(--muted); }
+  .badge.approved { background: var(--ledger); color: #fff; }
+  .badge.blocked { background: var(--alert); color: #fff; }
   .panel-foot {
     display: flex; justify-content: space-between; align-items: baseline;
     padding: 12px 16px; font-size: 0.9rem;
@@ -88,12 +96,11 @@
   .panel-foot strong { color: var(--alert); font-size: 1.05rem; }
   .panel-note { padding: 14px 16px; color: var(--muted); font-size: 0.9rem; margin: 0; }
 
-  /* Chat */
   .chat { display: flex; flex-direction: column; min-height: calc(100vh - 130px); }
   #log { flex: 1; }
-  #empty { padding: 8px 0 24px; }
-  #empty h2 { margin: 0 0 4px; font-size: 1.05rem; }
-  #empty p { margin: 0 0 14px; color: var(--muted); }
+  .empty { padding: 8px 0 24px; }
+  .empty h2 { margin: 0 0 4px; font-size: 1.05rem; }
+  .empty p { margin: 0 0 14px; color: var(--muted); }
   .suggestions { display: flex; flex-wrap: wrap; gap: 8px; }
   .suggestions button {
     background: var(--sheet); border: 1px solid var(--rule); border-radius: 999px;
@@ -133,7 +140,6 @@
   }
   .stamp.error { border-color: var(--alert); color: var(--alert); }
 
-  /* Box di scrittura */
   form { position: sticky; bottom: 0; padding: 16px 0 20px; background: linear-gradient(to bottom, transparent, var(--paper) 30%); }
   .composer {
     display: flex; gap: 8px; align-items: flex-end;
@@ -157,8 +163,14 @@
 <body>
 <header>
   <div class="header-inner">
-    <h1>Controllo fatture passive</h1>
-    <p>Fatture, DDT e ordini a confronto. Chiedi quali fatture non tornano e perché.</p>
+    <div>
+      <h1>Controllo fatture passive</h1>
+      <p>Fatture, DDT e ordini a confronto. Chiedi quali fatture non tornano e perché.</p>
+    </div>
+    <div class="user-switch">
+      <label for="user">Utente demo</label>
+      <select id="user"></select>
+    </div>
   </div>
 </header>
 
@@ -177,17 +189,7 @@
   </aside>
 
   <main class="chat">
-    <div id="log">
-      <section id="empty">
-        <h2>Da dove vuoi partire?</h2>
-        <p>Scegli una fattura dal pannello o parti da una di queste domande.</p>
-        <div class="suggestions">
-          <button type="button">Quali fatture hanno anomalie e quanto rischio di pagare in più?</button>
-          <button type="button">Quale fornitore mi crea più problemi?</button>
-          <button type="button">Mostrami le righe dell'ordine PO-2026-002.</button>
-        </div>
-      </section>
-    </div>
+    <div id="log"></div>
 
     <form id="ask">
       <div class="composer">
@@ -200,17 +202,36 @@
   </main>
 </div>
 
+<template id="empty-template">
+  <section class="empty">
+    <h2>Da dove vuoi partire?</h2>
+    <p>Scegli una fattura dal pannello o parti da una di queste domande.</p>
+    <div class="suggestions">
+      <button type="button">Quali fatture hanno anomalie e quanto rischio di pagare in più?</button>
+      <button type="button">Perché la fattura EM/26/1022 non torna? Confrontala con l'ordine.</button>
+      <button type="button">Approva la fattura FA-2026/0145.</button>
+    </div>
+  </section>
+</template>
+
 <script>
   const TOOL_LABELS = {
     list_reconciliations: "Elenco riconciliazioni",
     get_reconciliation: "Dettaglio fattura",
     get_purchase_order: "Ordine d'acquisto",
+    approve_invoice: "Approvazione",
+    block_invoice: "Blocco",
   };
-  const STATUS = {
+  const RECONCILIATION = {
     MATCHED: { label: "In regola", css: "ok" },
     DISCREPANCIES: { label: "Anomalie", css: "alert" },
     WAITING_FOR_DDT: { label: "Manca DDT", css: "wait" },
   };
+  const APPROVAL = {
+    APPROVED: { label: "Approvata", css: "approved" },
+    BLOCKED: { label: "Bloccata", css: "blocked" },
+  };
+  const ROLE_LABELS = { viewer: "consultazione", operator: "operatore" };
   const euro = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" });
 
   const history = [];
@@ -218,12 +239,31 @@
   const form = document.getElementById("ask");
   const input = document.getElementById("question");
   const send = document.getElementById("send");
+  const userSelect = document.getElementById("user");
 
   function el(tag, className, text) {
     const node = document.createElement(tag);
     if (className) node.className = className;
     if (text !== undefined) node.textContent = text;
     return node;
+  }
+
+  function showEmptyState() {
+    history.length = 0;
+    log.replaceChildren(document.getElementById("empty-template").content.cloneNode(true));
+    log.querySelectorAll(".suggestions button").forEach((button) => {
+      button.addEventListener("click", () => ask(button.textContent));
+    });
+  }
+
+  async function loadUsers() {
+    const response = await fetch("/api/users");
+    const users = await response.json();
+    for (const user of users) {
+      const option = el("option", null, `${user.name} (${ROLE_LABELS[user.role] || user.role})`);
+      option.value = user.id;
+      userSelect.append(option);
+    }
   }
 
   async function loadInvoices() {
@@ -239,13 +279,13 @@
       for (const row of rows) {
         const risk = Number(row.amount_at_risk);
         total += risk;
-        const status = STATUS[row.status] || { label: row.status, css: "wait" };
+        const badge = APPROVAL[row.approval_status] || RECONCILIATION[row.status] || { label: row.status, css: "wait" };
 
         const button = el("button");
         button.type = "button";
         button.append(
           el("span", "inv-number", row.invoice_number),
-          el("span", `badge ${status.css}`, status.label),
+          el("span", `badge ${badge.css}`, badge.label),
           el("span", "inv-supplier", row.supplier_name),
           el("span", "inv-risk" + (risk > 0 ? " positive" : ""), risk > 0 ? euro.format(risk) : "—"),
         );
@@ -299,7 +339,7 @@
 
   async function ask(question) {
     if (send.disabled) return;
-    document.getElementById("empty")?.remove();
+    log.querySelector(".empty")?.remove();
     history.push({ role: "user", content: question });
     addMessage("user", question);
     const pending = addMessage("assistant", "Sto controllando fatture, DDT e ordini…", { state: "pending" });
@@ -309,7 +349,7 @@
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history }),
+        body: JSON.stringify({ user_id: userSelect.value, messages: history }),
       });
       const data = await response.json();
       pending.remove();
@@ -352,10 +392,10 @@
     }
   });
 
-  document.querySelectorAll(".suggestions button").forEach((button) => {
-    button.addEventListener("click", () => ask(button.textContent));
-  });
+  userSelect.addEventListener("change", showEmptyState);
 
+  showEmptyState();
+  loadUsers();
   loadInvoices();
 </script>
 </body>
