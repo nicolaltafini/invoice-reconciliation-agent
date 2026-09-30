@@ -1,7 +1,7 @@
 [project]
 name = "reconciliation"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI agent for three-way invoice reconciliation (FatturaPA, DDT, purchase orders) with Claude and MCP"
 readme = "README.md"
 authors = [
     { name = "nicolaltafini", email = "nicola.altafini06@gmail.com" }

@@ -86,7 +86,7 @@ Python 3.12, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 17 (Docker), Pydantic, A
 Requisiti: Docker, [uv](https://docs.astral.sh/uv/), una chiave API Anthropic.
 
 ```bash
-git clone <url-del-repo>
+git clone https://github.com/nicolaltafini/invoice-reconciliation-agent.git
 cd invoice-reconciliation-agent
 cp .env.example .env                      # compila DB_USER, DB_PASSWORD, ANTHROPIC_API_KEY
 docker compose up -d
@@ -101,19 +101,21 @@ Chat: http://127.0.0.1:8001/chat. Documentazione API: http://127.0.0.1:8001/docs
 
 ## Struttura
 
+```
 src/reconciliation/
-fatturapa.py Parser XML FatturaPA
-ddt_extraction.py Estrazione DDT con Claude
-matching.py Regole di matching a tre vie
-approvals.py Regole di approvazione e audit
-mcp_server.py Server MCP, tool filtrati per ruolo
-agent.py Ciclo dell'agente (Claude + tool MCP)
-*_api.py Endpoint FastAPI
-static/chat.html Chat web
-migrations/ Migrazioni Alembic
-samples/ Fatture, DDT e dataset di valutazione
-scripts/ Caricamento esempi, valutazione, verifiche
-tests/ Test
+  fatturapa.py       Parser XML FatturaPA
+  ddt_extraction.py  Estrazione DDT con Claude
+  matching.py        Regole di matching a tre vie
+  approvals.py       Regole di approvazione e audit
+  mcp_server.py      Server MCP, tool filtrati per ruolo
+  agent.py           Ciclo dell'agente (Claude + tool MCP)
+  *_api.py           Endpoint FastAPI
+  static/chat.html   Chat web
+migrations/          Migrazioni Alembic
+samples/             Fatture, DDT e dataset di valutazione
+scripts/             Caricamento esempi, valutazione, verifiche
+tests/               Test
+```
 
 
 ## Limiti noti

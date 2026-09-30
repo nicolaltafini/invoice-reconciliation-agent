@@ -86,7 +86,7 @@ Python 3.12, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 17 (Docker), Pydantic, A
 Requirements: Docker, [uv](https://docs.astral.sh/uv/), an Anthropic API key.
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/nicolaltafini/invoice-reconciliation-agent.git
 cd invoice-reconciliation-agent
 cp .env.example .env                      # fill DB_USER, DB_PASSWORD, ANTHROPIC_API_KEY
 docker compose up -d
@@ -100,19 +100,22 @@ uv run uvicorn reconciliation.main:app --port 8001
 Chat: http://127.0.0.1:8001/chat. API docs: http://127.0.0.1:8001/docs. Tests: `uv run pytest`.
 
 ## Project structure
+
+```
 src/reconciliation/
-fatturapa.py FatturaPA XML parser
-ddt_extraction.py DDT extraction with Claude
-matching.py Three-way matching rules
-approvals.py Approval rules and audit log
-mcp_server.py MCP server, tools filtered by role
-agent.py Agent loop (Claude + MCP tools)
-*_api.py FastAPI endpoints
-static/chat.html Web chat
-migrations/ Alembic migrations
-samples/ Demo invoices, DDTs and evaluation dataset
-scripts/ Sample loading, evaluation, checks
-tests/ Unit tests
+  fatturapa.py       FatturaPA XML parser
+  ddt_extraction.py  DDT extraction with Claude
+  matching.py        Three-way matching rules
+  approvals.py       Approval rules and audit log
+  mcp_server.py      MCP server, tools filtered by role
+  agent.py           Agent loop (Claude + MCP tools)
+  *_api.py           FastAPI endpoints
+  static/chat.html   Web chat
+migrations/          Alembic migrations
+samples/             Demo invoices, DDTs and evaluation dataset
+scripts/             Sample loading, evaluation, checks
+tests/               Unit tests
+```
 
 
 ## Known limitations
